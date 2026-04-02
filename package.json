@@ -2,7 +2,8 @@
     "author": "outadoc",
     "dependencies": {
         "@rebble/clay": "^1.0.8",
-        "@twurple/api": "^8.1.2"
+        "@twurple/api": "^8.1.2",
+        "@twurple/auth": "^8.1.2"
     },
     "keywords": [
         "pebble-app"
@@ -10,41 +11,24 @@
     "name": "twich",
     "pebble": {
         "capabilities": [
-            "location",
             "configurable"
         ],
         "displayName": "Twitch",
         "enableMultiJS": true,
         "messageKeys": [
-            "TEMPERATURE",
-            "CONDITIONS",
-            "REQUEST_WEATHER",
-            "BackgroundColor",
-            "TextColor",
-            "TemperatureUnit",
-            "ShowDate"
+            "REQUEST_STREAMS",
+            "STREAM_COUNT",
+            "STREAM_INDEX",
+            "STREAM_USERNAME",
+            "STREAM_CATEGORY",
+            "STREAM_VIEWER_COUNT",
+            "STREAM_TITLE",
+            "ClientID",
+            "AccessToken"
         ],
         "projectType": "native",
         "resources": {
-            "media": [
-                {
-                    "compatibility": "2.7",
-                    "file": "fonts/Jersey10-Regular.ttf",
-                    "name": "FONT_JERSEY_56",
-                    "type": "font"
-                },
-                {
-                    "compatibility": "2.7",
-                    "file": "fonts/Jersey10-Regular.ttf",
-                    "name": "FONT_JERSEY_24",
-                    "type": "font"
-                },
-                {
-                    "file": "images/bt-icon.png",
-                    "name": "IMAGE_BT_ICON",
-                    "type": "bitmap"
-                }
-            ]
+            "media": []
         },
         "sdkVersion": "3",
         "targetPlatforms": [
