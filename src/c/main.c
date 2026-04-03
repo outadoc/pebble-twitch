@@ -12,16 +12,9 @@ typedef struct {
   char title[MAX_TITLE_LEN];
 } StreamInfo;
 
-typedef enum {
-  STATE_LOADING,
-  STATE_NO_STREAMS,
-  STATE_LOADED
-} AppState;
-
 static StreamInfo s_streams[MAX_STREAMS];
-static int s_stream_count = 0;
+static int s_streams_total = 0;
 static int s_streams_received = 0;
-static AppState s_state = STATE_LOADING;
 static int s_selected_index = 0;
 
 // Main window
@@ -125,11 +118,8 @@ static void show_detail_window(int index) {
 // ---- MenuLayer callbacks ----
 
 static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
-  if (s_state == STATE_LOADING && s_streams_received > 0) {
+  if (s_streams_received > 0) {
     return s_streams_received;
-  }
-  if (s_state == STATE_LOADED) {
-    return s_stream_count;
   }
   return 1; // One row for loading/empty state
 }
@@ -139,30 +129,26 @@ static int16_t menu_get_cell_height_callback(MenuLayer *menu_layer, MenuIndex *c
 }
 
 static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
-  switch (s_state) {
-    case STATE_LOADING:
-      if (s_streams_received == 0) {
-        menu_cell_basic_draw(ctx, cell_layer, "Loading...", NULL, NULL);
-        break;
-      }
-      // fall through: render received streams
-    case STATE_LOADED: {
-      StreamInfo *stream = &s_streams[cell_index->row];
-      static char subtitle_buf[48];
-      static char viewers_short[16];
-      snprintf(viewers_short, sizeof(viewers_short), "%d", stream->viewer_count);
-      snprintf(subtitle_buf, sizeof(subtitle_buf), "%s \xc2\xb7 %s", viewers_short, stream->category);
-      menu_cell_basic_draw(ctx, cell_layer, stream->username, subtitle_buf, NULL);
-      break;
-    }
-    case STATE_NO_STREAMS:
-      menu_cell_basic_draw(ctx, cell_layer, "No live streams", "Configure settings", NULL);
-      break;
+  if (s_streams_total > 0 && s_streams_received == 0) {
+      menu_cell_basic_draw(ctx, cell_layer, "Loading...", NULL, NULL);
+  }
+
+  if (s_streams_received > 0) {
+    StreamInfo *stream = &s_streams[cell_index->row];
+    static char subtitle_buf[48];
+    static char viewers_short[16];
+    snprintf(viewers_short, sizeof(viewers_short), "%d", stream->viewer_count);
+    snprintf(subtitle_buf, sizeof(subtitle_buf), "%s \xc2\xb7 %s", viewers_short, stream->category);
+    menu_cell_basic_draw(ctx, cell_layer, stream->username, subtitle_buf, NULL);
+  }
+
+  if (s_streams_total > 0) {
+    menu_cell_basic_draw(ctx, cell_layer, "No live streams", "Configure settings", NULL);
   }
 }
 
 static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
-  if (s_state == STATE_NO_STREAMS) return;
+  if (s_streams_received == 0) return;
   if ((int)cell_index->row >= s_streams_received) return;
   show_detail_window(cell_index->row);
 }
@@ -173,14 +159,15 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   Tuple *count_t = dict_find(iterator, MESSAGE_KEY_STREAM_COUNT);
   if (count_t) {
     int count = (int)count_t->value->int32;
+
     if (count == 0) {
-      s_state = STATE_NO_STREAMS;
-      s_stream_count = 0;
-    } else {
-      s_stream_count = count > MAX_STREAMS ? MAX_STREAMS : count;
+      s_streams_total = 0;
       s_streams_received = 0;
-      s_state = STATE_LOADING;
+    } else {
+      s_streams_total = count > MAX_STREAMS ? MAX_STREAMS : count;
+      s_streams_received = 0;
     }
+
     menu_layer_reload_data(s_menu_layer);
   }
 
@@ -200,9 +187,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       if (title_t) strncpy(stream->title, title_t->value->cstring, MAX_TITLE_LEN - 1);
 
       s_streams_received++;
-      if (s_streams_received >= s_stream_count) {
-        s_state = STATE_LOADED;
-      }
+
       menu_layer_reload_data(s_menu_layer);
     }
   }
