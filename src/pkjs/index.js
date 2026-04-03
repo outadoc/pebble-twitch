@@ -40,7 +40,10 @@ function xhrGet(url, headers, callback) {
 
 function fetchLiveStreams() {
   console.log('fetchLiveStreams: reading settings');
-  var settings = clay.getSettings();
+
+  // Work around bug with clay.getSettings()
+  var settings = JSON.parse(localStorage.getItem('clay-settings') || '{}');
+
   var clientId = TWITCH_CLIENT_ID;
   var accessToken = settings.AccessToken;
 
@@ -123,6 +126,6 @@ Pebble.addEventListener('ready', function () {
 Pebble.addEventListener('appmessage', function (e) {
   console.log('AppMessage received: ' + JSON.stringify(e.payload));
   if (e.payload['REQUEST_STREAMS']) {
-    //fetchLiveStreams();
+    fetchLiveStreams();
   }
 });
