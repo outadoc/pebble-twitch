@@ -30,6 +30,7 @@ static MenuLayer *s_menu_layer;
 
 // Detail window
 static Window *s_detail_window;
+static ScrollLayer *s_scroll_layer;
 static TextLayer *s_username_layer;
 static TextLayer *s_viewers_layer;
 static TextLayer *s_category_layer;
@@ -42,6 +43,13 @@ static void format_viewer_count(char *buf, size_t len, int count) {
   snprintf(buf, len, "%d", count);
 }
 
+static int16_t measure_text(const char *text, GFont font, int16_t width) {
+  GSize size = graphics_text_layout_get_content_size(
+    text, font, GRect(0, 0, width, 2000),
+    GTextOverflowModeWordWrap, GTextAlignmentLeft);
+  return size.h;
+}
+
 // ---- Detail window ----
 
 static void detail_window_load(Window *window) {
@@ -49,30 +57,52 @@ static void detail_window_load(Window *window) {
   GRect bounds = layer_get_bounds(root);
   StreamInfo *stream = &s_streams[s_selected_index];
 
-  s_username_layer = text_layer_create(GRect(5, 5, bounds.size.w - 10, 36));
-  text_layer_set_font(s_username_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
+  s_scroll_layer = scroll_layer_create(bounds);
+  scroll_layer_set_click_config_onto_window(s_scroll_layer, window);
+
+  const int16_t pad = 4;
+  const int16_t x = 5;
+  const int16_t w = bounds.size.w - 10;
+  int16_t y = pad;
+
+  GFont font_bold = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
+  GFont font_body = fonts_get_system_font(FONT_KEY_GOTHIC_18);
+
+  int16_t username_h = measure_text(stream->username, font_bold, w);
+  s_username_layer = text_layer_create(GRect(x, y, w, username_h));
+  text_layer_set_font(s_username_layer, font_bold);
   text_layer_set_overflow_mode(s_username_layer, GTextOverflowModeTrailingEllipsis);
   text_layer_set_text(s_username_layer, stream->username);
+  y += username_h + pad;
 
   format_viewer_count(s_viewers_buf, sizeof(s_viewers_buf), stream->viewer_count);
-  s_viewers_layer = text_layer_create(GRect(5, 44, bounds.size.w - 10, 22));
-  text_layer_set_font(s_viewers_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18));
+  int16_t viewers_h = measure_text(s_viewers_buf, font_body, w);
+  s_viewers_layer = text_layer_create(GRect(x, y, w, viewers_h));
+  text_layer_set_font(s_viewers_layer, font_body);
   text_layer_set_text(s_viewers_layer, s_viewers_buf);
+  y += viewers_h + pad;
 
-  s_category_layer = text_layer_create(GRect(5, 66, bounds.size.w - 10, 22));
-  text_layer_set_font(s_category_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18));
+  int16_t category_h = measure_text(stream->category, font_body, w);
+  s_category_layer = text_layer_create(GRect(x, y, w, category_h));
+  text_layer_set_font(s_category_layer, font_body);
   text_layer_set_overflow_mode(s_category_layer, GTextOverflowModeTrailingEllipsis);
   text_layer_set_text(s_category_layer, stream->category);
+  y += category_h + pad;
 
-  s_title_layer = text_layer_create(GRect(5, 92, bounds.size.w - 10, bounds.size.h - 97));
-  text_layer_set_font(s_title_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18));
+  int16_t title_h = measure_text(stream->title, font_body, w);
+  s_title_layer = text_layer_create(GRect(x, y, w, title_h));
+  text_layer_set_font(s_title_layer, font_body);
   text_layer_set_overflow_mode(s_title_layer, GTextOverflowModeWordWrap);
   text_layer_set_text(s_title_layer, stream->title);
+  y += title_h + pad;
 
-  layer_add_child(root, text_layer_get_layer(s_username_layer));
-  layer_add_child(root, text_layer_get_layer(s_viewers_layer));
-  layer_add_child(root, text_layer_get_layer(s_category_layer));
-  layer_add_child(root, text_layer_get_layer(s_title_layer));
+  scroll_layer_add_child(s_scroll_layer, text_layer_get_layer(s_username_layer));
+  scroll_layer_add_child(s_scroll_layer, text_layer_get_layer(s_viewers_layer));
+  scroll_layer_add_child(s_scroll_layer, text_layer_get_layer(s_category_layer));
+  scroll_layer_add_child(s_scroll_layer, text_layer_get_layer(s_title_layer));
+
+  scroll_layer_set_content_size(s_scroll_layer, GSize(bounds.size.w, y));
+  layer_add_child(root, scroll_layer_get_layer(s_scroll_layer));
 }
 
 static void detail_window_unload(Window *window) {
@@ -80,6 +110,8 @@ static void detail_window_unload(Window *window) {
   text_layer_destroy(s_viewers_layer);
   text_layer_destroy(s_category_layer);
   text_layer_destroy(s_title_layer);
+  scroll_layer_destroy(s_scroll_layer);
+  s_scroll_layer = NULL;
   window_destroy(s_detail_window);
   s_detail_window = NULL;
 }
