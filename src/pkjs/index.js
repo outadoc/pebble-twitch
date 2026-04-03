@@ -3,6 +3,7 @@ var clay = new Clay(require('./config'));
 
 var MAX_STREAMS = 20;
 var TWITCH_API = 'https://api.twitch.tv/helix';
+var TWITCH_CLIENT_ID = '53p2uwy4r832kgbxqs66g4i3idtjso';
 
 function xhrGet(url, headers, callback) {
   console.log('XHR GET ' + url);
@@ -38,7 +39,7 @@ function xhrGet(url, headers, callback) {
 function fetchLiveStreams() {
   console.log('fetchLiveStreams: reading settings');
   var settings = clay.getSettings();
-  var clientId = settings.ClientID;
+  var clientId = TWITCH_CLIENT_ID;
   var accessToken = settings.AccessToken;
 
   console.log('fetchLiveStreams: clientId set=' + !!clientId + ' accessToken set=' + !!accessToken);

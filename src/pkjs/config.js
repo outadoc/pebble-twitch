@@ -12,12 +12,6 @@ module.exports = [
       },
       {
         "type": "input",
-        "messageKey": "ClientID",
-        "label": "Client ID",
-        "defaultValue": ""
-      },
-      {
-        "type": "input",
         "messageKey": "AccessToken",
         "label": "Access Token",
         "defaultValue": ""
