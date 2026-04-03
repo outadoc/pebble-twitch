@@ -125,6 +125,9 @@ static void show_detail_window(int index) {
 // ---- MenuLayer callbacks ----
 
 static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
+  if (s_state == STATE_LOADING && s_streams_received > 0) {
+    return s_streams_received;
+  }
   if (s_state == STATE_LOADED) {
     return s_stream_count;
   }
@@ -138,11 +141,11 @@ static int16_t menu_get_cell_height_callback(MenuLayer *menu_layer, MenuIndex *c
 static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
   switch (s_state) {
     case STATE_LOADING:
-      menu_cell_basic_draw(ctx, cell_layer, "Loading...", NULL, NULL);
-      break;
-    case STATE_NO_STREAMS:
-      menu_cell_basic_draw(ctx, cell_layer, "No live streams", "Configure settings", NULL);
-      break;
+      if (s_streams_received == 0) {
+        menu_cell_basic_draw(ctx, cell_layer, "Loading...", NULL, NULL);
+        break;
+      }
+      // fall through: render received streams
     case STATE_LOADED: {
       StreamInfo *stream = &s_streams[cell_index->row];
       static char subtitle_buf[48];
@@ -152,11 +155,15 @@ static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuI
       menu_cell_basic_draw(ctx, cell_layer, stream->username, subtitle_buf, NULL);
       break;
     }
+    case STATE_NO_STREAMS:
+      menu_cell_basic_draw(ctx, cell_layer, "No live streams", "Configure settings", NULL);
+      break;
   }
 }
 
 static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
-  if (s_state != STATE_LOADED) return;
+  if (s_state == STATE_NO_STREAMS) return;
+  if ((int)cell_index->row >= s_streams_received) return;
   show_detail_window(cell_index->row);
 }
 
