@@ -21,7 +21,6 @@
             "STREAM_CATEGORY",
             "STREAM_VIEWER_COUNT",
             "STREAM_TITLE",
-            "ClientID",
             "AccessToken"
         ],
         "projectType": "native",

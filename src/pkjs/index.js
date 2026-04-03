@@ -1,5 +1,8 @@
 var Clay = require('@rebble/clay');
-var clay = new Clay(require('./config'));
+
+var clayConfig = require('./config');
+var clayCustom = require('./clay-custom');
+var clay = new Clay(clayConfig, clayCustom);
 
 var MAX_STREAMS = 20;
 var TWITCH_API = 'https://api.twitch.tv/helix';
@@ -121,6 +124,6 @@ Pebble.addEventListener('ready', function () {
 Pebble.addEventListener('appmessage', function (e) {
   console.log('AppMessage received: ' + JSON.stringify(e.payload));
   if (e.payload['REQUEST_STREAMS']) {
-    fetchLiveStreams();
+    //fetchLiveStreams();
   }
 });

@@ -11,6 +11,12 @@ module.exports = [
         "defaultValue": "Credentials"
       },
       {
+        "type": "button",
+        "id": "btnConnectTwitch",
+        "primary": true,
+        "defaultValue": "Connect with Twitch"
+      },
+      {
         "type": "input",
         "messageKey": "AccessToken",
         "label": "Access Token",
