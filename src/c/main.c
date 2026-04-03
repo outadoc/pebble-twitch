@@ -39,13 +39,7 @@ static TextLayer *s_title_layer;
 static char s_viewers_buf[24];
 
 static void format_viewer_count(char *buf, size_t len, int count) {
-  if (count >= 1000000) {
-    snprintf(buf, len, "%.1fM viewers", count / 1000000.0);
-  } else if (count >= 1000) {
-    snprintf(buf, len, "%.1fK viewers", count / 1000.0);
-  } else {
-    snprintf(buf, len, "%d viewers", count);
-  }
+  snprintf(buf, len, "%d", count);
 }
 
 // ---- Detail window ----
