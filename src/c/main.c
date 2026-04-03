@@ -39,10 +39,6 @@ static TextLayer *s_title_layer;
 // Persistent buffers for detail window text
 static char s_viewers_buf[24];
 
-static void format_viewer_count(char *buf, size_t len, int count) {
-  snprintf(buf, len, "%d", count);
-}
-
 static int16_t measure_text(const char *text, GFont font, int16_t width) {
   GSize size = graphics_text_layout_get_content_size(
     text, font, GRect(0, 0, width, 2000),
@@ -75,7 +71,7 @@ static void detail_window_load(Window *window) {
   text_layer_set_text(s_username_layer, stream->username);
   y += username_h + pad;
 
-  format_viewer_count(s_viewers_buf, sizeof(s_viewers_buf), stream->viewer_count);
+  snprintf(s_viewers_buf, sizeof(s_viewers_buf), "%d viewers", stream->viewer_count);
   int16_t viewers_h = measure_text(s_viewers_buf, font_body, w);
   s_viewers_layer = text_layer_create(GRect(x, y, w, viewers_h));
   text_layer_set_font(s_viewers_layer, font_body);
@@ -151,7 +147,7 @@ static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuI
       StreamInfo *stream = &s_streams[cell_index->row];
       static char subtitle_buf[48];
       static char viewers_short[16];
-      format_viewer_count(viewers_short, sizeof(viewers_short), stream->viewer_count);
+      snprintf(viewers_short, sizeof(viewers_short), "%d", stream->viewer_count);
       snprintf(subtitle_buf, sizeof(subtitle_buf), "%s \xc2\xb7 %s", viewers_short, stream->category);
       menu_cell_basic_draw(ctx, cell_layer, stream->username, subtitle_buf, NULL);
       break;
