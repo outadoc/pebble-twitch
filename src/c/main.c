@@ -20,6 +20,7 @@ static int s_selected_index = 0;
 // Main window
 static Window *s_main_window;
 static MenuLayer *s_menu_layer;
+static StatusBarLayer *s_status_bar;
 
 // Detail window
 static Window *s_detail_window;
@@ -46,7 +47,11 @@ static void detail_window_load(Window *window) {
   GRect bounds = layer_get_bounds(root);
   StreamInfo *stream = &s_streams[s_selected_index];
 
-  s_scroll_layer = scroll_layer_create(bounds);
+  s_status_bar = status_bar_layer_create();
+  layer_set_frame(status_bar_layer_get_layer(s_status_bar), GRect(0, 0, bounds.size.w, STATUS_BAR_LAYER_HEIGHT));
+  layer_add_child(root, status_bar_layer_get_layer(s_status_bar));
+
+  s_scroll_layer = scroll_layer_create(GRect(0, STATUS_BAR_LAYER_HEIGHT, bounds.size.w, bounds.size.h));
   scroll_layer_set_click_config_onto_window(s_scroll_layer, window);
 
   const int16_t pad = 4;
@@ -101,7 +106,15 @@ static void detail_window_unload(Window *window) {
   text_layer_destroy(s_category_layer);
   text_layer_destroy(s_title_layer);
   scroll_layer_destroy(s_scroll_layer);
+  status_bar_layer_destroy(s_status_bar);
+
+  s_username_layer = NULL;
+  s_viewers_layer = NULL;
+  s_category_layer = NULL;
+  s_title_layer = NULL;
   s_scroll_layer = NULL;
+  s_status_bar = NULL;
+
   window_destroy(s_detail_window);
   s_detail_window = NULL;
 }
@@ -209,7 +222,11 @@ static void main_window_load(Window *window) {
   Layer *root = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(root);
 
-  s_menu_layer = menu_layer_create(bounds);
+  s_status_bar = status_bar_layer_create();
+  layer_set_frame(status_bar_layer_get_layer(s_status_bar), GRect(0, 0, bounds.size.w, STATUS_BAR_LAYER_HEIGHT));
+  layer_add_child(root, status_bar_layer_get_layer(s_status_bar));
+
+  s_menu_layer = menu_layer_create(GRect(0, STATUS_BAR_LAYER_HEIGHT, bounds.size.w, bounds.size.h));
   menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks) {
     .get_num_rows = menu_get_num_rows_callback,
     .get_cell_height = menu_get_cell_height_callback,
@@ -222,6 +239,10 @@ static void main_window_load(Window *window) {
 
 static void main_window_unload(Window *window) {
   menu_layer_destroy(s_menu_layer);
+  status_bar_layer_destroy(s_status_bar);
+
+  s_menu_layer = NULL;
+  s_status_bar = NULL;
 }
 
 // ---- App lifecycle ----
