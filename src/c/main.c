@@ -129,21 +129,18 @@ static int16_t menu_get_cell_height_callback(MenuLayer *menu_layer, MenuIndex *c
 }
 
 static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
-  if (s_streams_total > 0 && s_streams_received == 0) {
-      menu_cell_basic_draw(ctx, cell_layer, "Loading...", NULL, NULL);
+  if (s_streams_total == 0) {
+    menu_cell_basic_draw(ctx, cell_layer, "No live streams", NULL, NULL);
+    return;
   }
 
-  if (s_streams_received > 0) {
+  if (s_streams_received > cell_index->row) {
     StreamInfo *stream = &s_streams[cell_index->row];
     static char subtitle_buf[48];
     static char viewers_short[16];
     snprintf(viewers_short, sizeof(viewers_short), "%d", stream->viewer_count);
     snprintf(subtitle_buf, sizeof(subtitle_buf), "%s \xc2\xb7 %s", viewers_short, stream->category);
     menu_cell_basic_draw(ctx, cell_layer, stream->username, subtitle_buf, NULL);
-  }
-
-  if (s_streams_total > 0) {
-    menu_cell_basic_draw(ctx, cell_layer, "No live streams", "Configure settings", NULL);
   }
 }
 
