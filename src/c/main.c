@@ -265,6 +265,8 @@ static void init() {
   app_message_register_inbox_dropped(inbox_dropped_callback);
   app_message_register_outbox_failed(outbox_failed_callback);
   app_message_register_outbox_sent(outbox_sent_callback);
+
+  // TODO see if this needs to be adjusted
   app_message_open(512, 256);
 
   DictionaryIterator *iter;
