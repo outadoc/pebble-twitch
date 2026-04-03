@@ -54,12 +54,13 @@ static void detail_window_load(Window *window) {
   const int16_t w = bounds.size.w - 10;
   int16_t y = pad;
 
-  GFont font_bold = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
+  GFont font_heading = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
+  GFont font_title = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
   GFont font_body = fonts_get_system_font(FONT_KEY_GOTHIC_18);
 
-  int16_t username_h = measure_text(stream->username, font_bold, w);
+  int16_t username_h = measure_text(stream->username, font_heading, w);
   s_username_layer = text_layer_create(GRect(x, y, w, username_h));
-  text_layer_set_font(s_username_layer, font_bold);
+  text_layer_set_font(s_username_layer, font_heading);
   text_layer_set_overflow_mode(s_username_layer, GTextOverflowModeTrailingEllipsis);
   text_layer_set_text(s_username_layer, stream->username);
   y += username_h + pad;
@@ -71,9 +72,9 @@ static void detail_window_load(Window *window) {
   text_layer_set_text(s_viewers_layer, s_viewers_buf);
   y += viewers_h + pad;
 
-  int16_t category_h = measure_text(stream->category, font_body, w);
+  int16_t category_h = measure_text(stream->category, font_title, w);
   s_category_layer = text_layer_create(GRect(x, y, w, category_h));
-  text_layer_set_font(s_category_layer, font_body);
+  text_layer_set_font(s_category_layer, font_title);
   text_layer_set_overflow_mode(s_category_layer, GTextOverflowModeTrailingEllipsis);
   text_layer_set_text(s_category_layer, stream->category);
   y += category_h + pad;
