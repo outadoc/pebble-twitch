@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Twitch OAuth — Access Token</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0e0e10;
+      color: #efeff1;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .card {
+      background: #18181b;
+      border: 1px solid #2f2f35;
+      border-radius: 12px;
+      padding: 2.5rem 2rem;
+      max-width: 560px;
+      width: 100%;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 1.25rem;
+    }
+
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    p.subtitle {
+      color: #adadb8;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin-bottom: 1.75rem;
+    }
+
+    .token-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #adadb8;
+      margin-bottom: 0.5rem;
+    }
+
+    .token-box {
+      background: #0e0e10;
+      border: 1px solid #2f2f35;
+      border-radius: 8px;
+      padding: 0.875rem 1rem;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.8rem;
+      color: #bf94ff;
+      word-break: break-all;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      user-select: all;
+    }
+
+    .copy-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #9147ff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.6rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .copy-btn:hover { background: #772ce8; }
+    .copy-btn:active { background: #5c16c5; }
+    .copy-btn.copied { background: #1e7e34; }
+
+    .error-state h1 { color: #f04747; }
+
+    .error-box {
+      background: #1a0a0a;
+      border: 1px solid #5c1010;
+      border-radius: 8px;
+      padding: 0.875rem 1rem;
+      font-size: 0.875rem;
+      color: #f04747;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="card"></div>
+
+  <script>
+    (function () {
+      var card = document.getElementById('card');
+
+      // Twitch implicit grant flow puts params in the URL hash fragment
+      var hash = window.location.hash.slice(1); // strip leading '#'
+      var params = {};
+      hash.split('&').forEach(function (part) {
+        var kv = part.split('=');
+        if (kv.length === 2) params[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1]);
+      });
+
+      var token = params['access_token'];
+
+      if (token) {
+        card.innerHTML =
+          '<img class="logo" src="assets/logo-success.svg" alt="Twitch">' +
+          '<h1>Authorization successful</h1>' +
+          '<p class="subtitle">Copy your access token below and paste it into the Pebble app configuration.</p>' +
+          '<div class="token-label">Access token</div>' +
+          '<div class="token-box" id="token-display"></div>' +
+          '<button class="copy-btn" id="copy-btn">' +
+            '<img src="assets/icon-copy.svg" width="16" height="16" alt="">' +
+            'Copy to clipboard' +
+          '</button>';
+
+        document.getElementById('token-display').textContent = token;
+
+        document.getElementById('copy-btn').addEventListener('click', function () {
+          var btn = this;
+          navigator.clipboard.writeText(token).then(function () {
+            btn.classList.add('copied');
+            btn.innerHTML =
+              '<img src="assets/icon-check.svg" width="16" height="16" alt="">' +
+              'Copied!';
+            setTimeout(function () {
+              btn.classList.remove('copied');
+              btn.innerHTML =
+                '<img src="assets/icon-copy.svg" width="16" height="16" alt="">' +
+                'Copy to clipboard';
+            }, 2000);
+          });
+        });
+      } else {
+        card.classList.add('error-state');
+        card.innerHTML =
+          '<img class="logo" src="assets/logo-error.svg" alt="Twitch">' +
+          '<h1>No access token found</h1>' +
+          '<p class="subtitle">This page did not receive an access token from Twitch. Make sure this URL is configured as the redirect URI in your Twitch developer app, then try authorizing again.</p>' +
+          '<div class="error-box">Expected URL format:<br><code>#access_token=&lt;token&gt;&amp;scope=…&amp;token_type=bearer</code></div>';
+      }
+    }());
+  </script>
+</body>
+</html>
