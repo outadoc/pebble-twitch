@@ -1,8 +1,7 @@
 var Clay = require('@rebble/clay');
 
 var clayConfig = require('./config');
-var clayCustom = require('./clay-custom');
-var clay = new Clay(clayConfig, clayCustom);
+var clay = new Clay(clayConfig);
 
 var MAX_STREAMS = 20;
 var TWITCH_API = 'https://api.twitch.tv/helix';
