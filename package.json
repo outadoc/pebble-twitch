@@ -1,9 +1,7 @@
 {
     "author": "outadoc",
     "dependencies": {
-        "@rebble/clay": "^1.0.8",
-        "@twurple/api": "^8.1.2",
-        "@twurple/auth": "^8.1.2"
+        "@rebble/clay": "^1.0.8"
     },
     "keywords": [
         "pebble-app"
