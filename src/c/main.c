@@ -62,6 +62,7 @@ static void detail_window_load(Window *window) {
   const int16_t x = 5;
   const int16_t w = bounds.size.w - 10;
   int16_t y = pad;
+  int16_t round_padding = 8;
 
   GFont font_heading = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
   GFont font_title = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
@@ -102,6 +103,11 @@ static void detail_window_load(Window *window) {
 
   scroll_layer_set_content_size(s_scroll_layer, GSize(bounds.size.w, y));
   layer_add_child(root, scroll_layer_get_layer(s_scroll_layer));
+
+  text_layer_enable_screen_text_flow_and_paging(s_username_layer, round_padding);
+  text_layer_enable_screen_text_flow_and_paging(s_viewers_layer, round_padding);
+  text_layer_enable_screen_text_flow_and_paging(s_category_layer, round_padding);
+  text_layer_enable_screen_text_flow_and_paging(s_title_layer, round_padding);
 }
 
 static void detail_window_unload(Window *window) {
