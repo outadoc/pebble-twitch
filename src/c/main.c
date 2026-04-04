@@ -61,7 +61,7 @@ static void detail_window_load(Window *window) {
 
   GSize username_size = graphics_text_layout_get_content_size(stream->username, font_heading, bounds, 
     GTextOverflowModeTrailingEllipsis, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
-  s_username_layer = text_layer_create(GRect(bounds.origin.x, y, username_size.w, username_size.h));
+  s_username_layer = text_layer_create(GRect(bounds.origin.x, y, bounds.size.w, username_size.h));
   text_layer_set_font(s_username_layer, font_heading);
   text_layer_set_overflow_mode(s_username_layer, GTextOverflowModeTrailingEllipsis);
   text_layer_set_text_alignment(s_username_layer, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
@@ -72,7 +72,7 @@ static void detail_window_load(Window *window) {
 
   GSize viewers_size = graphics_text_layout_get_content_size(s_viewers_buf, font_body, bounds, 
     GTextOverflowModeTrailingEllipsis, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
-  s_viewers_layer = text_layer_create(GRect(bounds.origin.x, y, viewers_size.w, viewers_size.h));
+  s_viewers_layer = text_layer_create(GRect(bounds.origin.x, y, bounds.size.w, viewers_size.h));
   text_layer_set_font(s_viewers_layer, font_body);
   text_layer_set_overflow_mode(s_viewers_layer, GTextOverflowModeTrailingEllipsis);
   text_layer_set_text_alignment(s_viewers_layer, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
@@ -81,7 +81,7 @@ static void detail_window_load(Window *window) {
 
   GSize category_size = graphics_text_layout_get_content_size(stream->category, font_title, bounds, 
     GTextOverflowModeTrailingEllipsis, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
-  s_category_layer = text_layer_create(GRect(bounds.origin.x, y, category_size.w, category_size.h));
+  s_category_layer = text_layer_create(GRect(bounds.origin.x, y, bounds.size.w, category_size.h));
   text_layer_set_font(s_category_layer, font_title);
   text_layer_set_overflow_mode(s_category_layer, GTextOverflowModeTrailingEllipsis);
   text_layer_set_text_alignment(s_category_layer, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
@@ -90,7 +90,7 @@ static void detail_window_load(Window *window) {
 
   GSize title_size = graphics_text_layout_get_content_size(stream->title, font_body, bounds, 
     GTextOverflowModeWordWrap, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
-  s_title_layer = text_layer_create(GRect(bounds.origin.x, y, title_size.w, title_size.h));
+  s_title_layer = text_layer_create(GRect(bounds.origin.x, y, bounds.size.w, title_size.h));
   text_layer_set_font(s_title_layer, font_body);
   text_layer_set_overflow_mode(s_title_layer, GTextOverflowModeWordWrap);
   text_layer_set_text_alignment(s_title_layer, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
