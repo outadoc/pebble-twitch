@@ -215,7 +215,7 @@ static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuI
         StreamInfo *stream = &s_streams[cell_index->row];
         static char subtitle_buf[48];
         static char viewers_short[16];
-        snprintf(viewers_short, sizeof(viewers_short), "%ld", stream->viewer_count);
+        format_viewer_count(viewers_short, sizeof(viewers_short), stream->viewer_count);
         snprintf(subtitle_buf, sizeof(subtitle_buf), "%s \xc2\xb7 %s", viewers_short, stream->category);
         menu_cell_basic_draw(ctx, cell_layer, stream->username, subtitle_buf, NULL);
     }
