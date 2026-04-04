@@ -1,12 +1,12 @@
-var Clay = require('@rebble/clay');
+let Clay = require('@rebble/clay');
 
-var clayConfig = require('./config');
-var clay = new Clay(clayConfig);
+let clayConfig = require('./config');
+let clay = new Clay(clayConfig);
 
-var MAX_STREAMS = 20;
-var TWITCH_API = 'https://api.twitch.tv/helix';
-var TWITCH_CLIENT_ID = '53p2uwy4r832kgbxqs66g4i3idtjso';
-var MOCK_API_DATA_FOR_TESTING = false;
+let MAX_STREAMS = 20;
+let TWITCH_API = 'https://api.twitch.tv/helix';
+let TWITCH_CLIENT_ID = '53p2uwy4r832kgbxqs66g4i3idtjso';
+let MOCK_API_DATA_FOR_TESTING = false;
 
 function xhrGet(url, headers, callback) {
   console.log('XHR GET ' + url);
@@ -46,10 +46,10 @@ function fetchLiveStreams() {
   console.log('fetchLiveStreams: reading settings');
 
   // Work around bug with clay.getSettings()
-  var settings = JSON.parse(localStorage.getItem('clay-settings') || '{}');
+  let settings = JSON.parse(localStorage.getItem('clay-settings') || '{}');
 
-  var clientId = TWITCH_CLIENT_ID;
-  var accessToken = settings.AccessToken;
+  let clientId = TWITCH_CLIENT_ID;
+  let accessToken = settings.AccessToken;
 
   console.log('fetchLiveStreams: clientId set=' + clientId + ' accessToken set=[redacted]');
 
@@ -59,7 +59,7 @@ function fetchLiveStreams() {
     return;
   }
 
-  var headers = {
+  let headers = {
     'Authorization': 'Bearer ' + accessToken,
     'Client-Id': clientId
   };
@@ -79,7 +79,7 @@ function fetchLiveStreams() {
       return;
     }
 
-    var userId = data.data[0].id;
+    let userId = data.data[0].id;
 
     console.log('fetchLiveStreams: got user id=' + userId + ' login=' + data.data[0].login);
 
@@ -92,8 +92,8 @@ function fetchLiveStreams() {
         return;
       }
 
-      var allStreams = streamsData.data || [];
-      var streams = allStreams.slice(0, MAX_STREAMS);
+      let allStreams = streamsData.data || [];
+      let streams = allStreams.slice(0, MAX_STREAMS);
 
       console.log('fetchLiveStreams: got ' + allStreams.length + ' live streams, sending ' + streams.length);
 
@@ -103,7 +103,7 @@ function fetchLiveStreams() {
 }
 
 function sendMockStreams() {
-  var mockStreams = [
+  let mockStreams = [
     {
       "id": "1",
       "user_id": "1",
@@ -301,11 +301,11 @@ function sendStream(streams, index) {
     return;
   }
 
-  var s = streams[index];
+  let s = streams[index];
 
   console.log('sendStream: sending stream ' + index + '/' + streams.length + ' user=' + s.user_name);
 
-  var dict = {
+  let dict = {
     'STREAM_INDEX': index,
     'STREAM_USERNAME': (s.user_name || '').substring(0, 31),
     'STREAM_CATEGORY': (s.game_name || '').substring(0, 31),
