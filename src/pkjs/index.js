@@ -51,7 +51,7 @@ function fetchLiveStreams() {
   var clientId = TWITCH_CLIENT_ID;
   var accessToken = settings.AccessToken;
 
-  console.log('fetchLiveStreams: clientId set=' + !!clientId + ' accessToken set=' + !!accessToken);
+  console.log('fetchLiveStreams: clientId set=' + clientId + ' accessToken set=[redacted]');
 
   if (!clientId || !accessToken) {
     console.log('fetchLiveStreams: no credentials configured, sending STREAM_COUNT=0');

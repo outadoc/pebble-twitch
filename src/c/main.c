@@ -17,7 +17,7 @@ typedef struct
 } StreamInfo;
 
 static StreamInfo s_streams[MAX_STREAMS];
-static int s_streams_total = 0;
+static int s_streams_total = -1;
 static int s_streams_received = 0;
 static int s_selected_index = 0;
 
@@ -207,6 +207,12 @@ static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t secti
 
 static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data)
 {
+    if (s_streams_total == -1)
+    {
+        menu_cell_basic_draw(ctx, cell_layer, "Loading...", NULL, NULL);
+        return;
+    }
+
     if (s_streams_total == 0)
     {
         menu_cell_basic_draw(ctx, cell_layer, "No live streams", NULL, NULL);
@@ -248,16 +254,8 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     {
         int count = (int)count_t->value->int32;
 
-        if (count == 0)
-        {
-            s_streams_total = 0;
-            s_streams_received = 0;
-        }
-        else
-        {
-            s_streams_total = count > MAX_STREAMS ? MAX_STREAMS : count;
-            s_streams_received = 0;
-        }
+        s_streams_total = count > MAX_STREAMS ? MAX_STREAMS : count;
+        s_streams_received = 0;
 
         menu_layer_reload_data(s_menu_layer);
     }
