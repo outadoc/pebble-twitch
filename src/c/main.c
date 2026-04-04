@@ -52,7 +52,7 @@ static void detail_window_load(Window *window) {
   const int16_t item_spacing = 4;
   int16_t y = bounds.origin.y;
 
-  GRect available_content_bounds = GRect(bounds.origin.x, bounds.origin.y, bounds.size.w, INT16_MAX);
+  GRect available_content_bounds = GRect(bounds.origin.x, bounds.origin.y, bounds.size.w - 2 * padding, INT16_MAX);
 
   GFont font_heading = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
   GFont font_title = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
