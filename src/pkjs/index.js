@@ -116,7 +116,6 @@ function sendMockStreams() {
       "viewer_count": 9746,
       "started_at": "2026-04-04T12:45:03Z",
       "language": "fr",
-      "thumbnail_url": "https://static-cdn.jtvnw.net/previews-ttv/live_user_zerator-{width}x{height}.jpg",
       "tag_ids": [],
       "tags": [
         "Français"
@@ -135,7 +134,6 @@ function sendMockStreams() {
       "viewer_count": 2047,
       "started_at": "2026-04-04T12:30:46Z",
       "language": "fr",
-      "thumbnail_url": "https://static-cdn.jtvnw.net/previews-ttv/live_user_hortyunderscore-{width}x{height}.jpg",
       "tag_ids": [],
       "tags": [
         "Français"
@@ -154,7 +152,6 @@ function sendMockStreams() {
       "viewer_count": 2036,
       "started_at": "2026-04-04T12:44:21Z",
       "language": "fr",
-      "thumbnail_url": "https://static-cdn.jtvnw.net/previews-ttv/live_user_shisheyu-{width}x{height}.jpg",
       "tag_ids": [],
       "tags": [
         "Français",
@@ -174,7 +171,6 @@ function sendMockStreams() {
       "viewer_count": 680,
       "started_at": "2026-04-04T13:10:40Z",
       "language": "fr",
-      "thumbnail_url": "https://static-cdn.jtvnw.net/previews-ttv/live_user_sundae-{width}x{height}.jpg",
       "tag_ids": [],
       "tags": [
         "Français",
@@ -199,7 +195,6 @@ function sendMockStreams() {
       "viewer_count": 664,
       "started_at": "2026-04-04T13:33:18Z",
       "language": "fr",
-      "thumbnail_url": "https://static-cdn.jtvnw.net/previews-ttv/live_user_emilien-{width}x{height}.jpg",
       "tag_ids": [],
       "tags": [
         "Français",
@@ -227,7 +222,6 @@ function sendMockStreams() {
       "viewer_count": 446,
       "started_at": "2026-04-04T12:02:58Z",
       "language": "fr",
-      "thumbnail_url": "https://static-cdn.jtvnw.net/previews-ttv/live_user_sakor_-{width}x{height}.jpg",
       "tag_ids": [],
       "tags": [
         "Français",
@@ -253,7 +247,6 @@ function sendMockStreams() {
       "viewer_count": 223,
       "started_at": "2026-04-02T19:43:04Z",
       "language": "en",
-      "thumbnail_url": "https://static-cdn.jtvnw.net/previews-ttv/live_user_marinemammalrescue-{width}x{height}.jpg",
       "tag_ids": [],
       "tags": [
         "Animals",
