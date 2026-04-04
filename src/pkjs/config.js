@@ -1,14 +1,14 @@
 module.exports = [
   {
     "type": "heading",
-    "defaultValue": "Twitch Settings"
+    "defaultValue": "Twebble Settings"
   },
   {
     "type": "section",
     "items": [
       {
         "type": "heading",
-        "defaultValue": "Credentials"
+        "defaultValue": "Twitch Credentials"
       },
       {
         "type": "text",

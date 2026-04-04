@@ -6,12 +6,12 @@
     "keywords": [
         "pebble-app"
     ],
-    "name": "twich",
+    "name": "twebble",
     "pebble": {
         "capabilities": [
             "configurable"
         ],
-        "displayName": "Twitch",
+        "displayName": "Twebble",
         "enableMultiJS": true,
         "messageKeys": [
             "REQUEST_STREAMS",
