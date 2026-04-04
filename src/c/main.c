@@ -5,7 +5,8 @@
 #define MAX_CATEGORY_LEN 32
 #define MAX_TITLE_LEN 256
 
-#define DETAIL_TEXT_INSET 5
+#define DETAIL_OUTER_PADDING 8
+#define DETAIL_ROUND_EXTRA_PADDING 8
 #define DETAIL_ITEM_SPACING 4
 
 #define COLOR_ACCENT GColorPurple
@@ -40,16 +41,22 @@ static TextLayer *s_title_layer;
 // UI data
 static char s_viewers_buf[24];
 
-static void format_viewer_count(char *dest, size_t dest_size, int32_t viewer_count) {
-    if (viewer_count >= 1000000) {
+static void format_viewer_count(char *dest, size_t dest_size, int32_t viewer_count)
+{
+    if (viewer_count >= 1000000)
+    {
         int32_t int_part = viewer_count / 1000000;
         int32_t frac_digit = (viewer_count % 1000000) / 100000;
         snprintf(dest, dest_size, "%ld.%ldM", int_part, frac_digit);
-    } else if (viewer_count >= 1000) {
+    }
+    else if (viewer_count >= 1000)
+    {
         int32_t int_part = viewer_count / 1000;
         int32_t frac_digit = (viewer_count % 1000) / 100;
         snprintf(dest, dest_size, "%ld.%ldK", int_part, frac_digit);
-    } else {
+    }
+    else
+    {
         snprintf(dest, dest_size, "%ld", viewer_count);
     }
 }
@@ -67,12 +74,10 @@ static void detail_window_load(Window *window)
     layer_set_frame(status_bar_layer_get_layer(s_status_bar), GRect(bounds.origin.x, bounds.origin.y, bounds.size.w, STATUS_BAR_LAYER_HEIGHT));
     layer_add_child(root, status_bar_layer_get_layer(s_status_bar));
 
-    int16_t padding = 8;
-
     GRect padded_bounds = GRect(
-        bounds.origin.x + padding,
+        bounds.origin.x + DETAIL_OUTER_PADDING,
         bounds.origin.y,
-        bounds.size.w - (padding * 2),
+        bounds.size.w - (DETAIL_OUTER_PADDING * 2),
         bounds.size.h);
 
     GRect available_content_bounds = GRect(0, 0, padded_bounds.size.w, 2000);
@@ -96,7 +101,7 @@ static void detail_window_load(Window *window)
 
     char viewers_short[8];
     format_viewer_count(viewers_short, sizeof(viewers_short), stream->viewer_count);
-    
+
     snprintf(s_viewers_buf, sizeof(s_viewers_buf), "%s viewers", viewers_short);
 
     GSize viewers_size = graphics_text_layout_get_content_size(s_viewers_buf,
@@ -130,7 +135,7 @@ static void detail_window_load(Window *window)
     text_layer_set_font(s_title_layer, font_body);
     text_layer_set_overflow_mode(s_title_layer, GTextOverflowModeWordWrap);
     text_layer_set_text(s_title_layer, stream->title);
-    y += title_size.h + DETAIL_ITEM_SPACING + padding;
+    y += title_size.h + DETAIL_ITEM_SPACING + DETAIL_OUTER_PADDING;
 
     s_scroll_layer = scroll_layer_create(GRect(bounds.origin.x,
                                                bounds.origin.y + STATUS_BAR_LAYER_HEIGHT,
@@ -146,17 +151,16 @@ static void detail_window_load(Window *window)
     layer_add_child(root, scroll_layer_get_layer(s_scroll_layer));
 
 #if PBL_ROUND
+
     text_layer_set_text_alignment(s_username_layer, GTextAlignmentCenter);
     text_layer_set_text_alignment(s_viewers_layer, GTextAlignmentCenter);
     text_layer_set_text_alignment(s_category_layer, GTextAlignmentCenter);
     text_layer_set_text_alignment(s_title_layer, GTextAlignmentCenter);
 
-    const uint16_t inset = 8;
-
-    text_layer_enable_screen_text_flow_and_paging(s_username_layer, inset);
-    text_layer_enable_screen_text_flow_and_paging(s_viewers_layer, inset);
-    text_layer_enable_screen_text_flow_and_paging(s_category_layer, inset);
-    text_layer_enable_screen_text_flow_and_paging(s_title_layer, inset);
+    text_layer_enable_screen_text_flow_and_paging(s_username_layer, DETAIL_ROUND_EXTRA_PADDING);
+    text_layer_enable_screen_text_flow_and_paging(s_viewers_layer, DETAIL_ROUND_EXTRA_PADDING);
+    text_layer_enable_screen_text_flow_and_paging(s_category_layer, DETAIL_ROUND_EXTRA_PADDING);
+    text_layer_enable_screen_text_flow_and_paging(s_title_layer, DETAIL_ROUND_EXTRA_PADDING);
 
 #endif
 }
