@@ -48,11 +48,10 @@ static void detail_window_load(Window *window) {
   layer_set_frame(status_bar_layer_get_layer(s_status_bar), GRect(bounds.origin.x, bounds.origin.y, bounds.size.w, STATUS_BAR_LAYER_HEIGHT));
   layer_add_child(root, status_bar_layer_get_layer(s_status_bar));
 
-  const int16_t padding = 8;
   const int16_t item_spacing = 4;
   int16_t y = bounds.origin.y;
 
-  GRect available_content_bounds = GRect(bounds.origin.x, bounds.origin.y, bounds.size.w - 2 * padding, INT16_MAX);
+  GRect available_content_bounds = GRect(bounds.origin.x, bounds.origin.y, bounds.size.w, INT16_MAX);
 
   GFont font_heading = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
   GFont font_title = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
@@ -105,11 +104,6 @@ static void detail_window_load(Window *window) {
   scroll_layer_add_child(s_scroll_layer, text_layer_get_layer(s_title_layer));
 
   layer_add_child(root, scroll_layer_get_layer(s_scroll_layer));
-
-  text_layer_enable_screen_text_flow_and_paging(s_username_layer, padding);
-  text_layer_enable_screen_text_flow_and_paging(s_viewers_layer, padding);
-  text_layer_enable_screen_text_flow_and_paging(s_category_layer, padding);
-  text_layer_enable_screen_text_flow_and_paging(s_title_layer, padding);
 }
 
 static void detail_window_unload(Window *window) {
