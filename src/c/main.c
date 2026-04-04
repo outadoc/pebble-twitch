@@ -48,18 +48,17 @@ static void detail_window_load(Window *window) {
   layer_set_frame(status_bar_layer_get_layer(s_status_bar), GRect(bounds.origin.x, bounds.origin.y, bounds.size.w, STATUS_BAR_LAYER_HEIGHT));
   layer_add_child(root, status_bar_layer_get_layer(s_status_bar));
 
-  s_scroll_layer = scroll_layer_create(GRect(bounds.origin.x, bounds.origin.y + STATUS_BAR_LAYER_HEIGHT, bounds.size.w, bounds.size.h));
-  scroll_layer_set_click_config_onto_window(s_scroll_layer, window);
-
   const int16_t padding = 8;
   const int16_t item_spacing = 4;
   int16_t y = bounds.origin.y;
+
+  GRect available_content_bounds = GRect(bounds.origin.x, bounds.origin.y, bounds.size.w, INT16_MAX);
 
   GFont font_heading = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
   GFont font_title = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
   GFont font_body = fonts_get_system_font(FONT_KEY_GOTHIC_18);
 
-  GSize username_size = graphics_text_layout_get_content_size(stream->username, font_heading, bounds, 
+  GSize username_size = graphics_text_layout_get_content_size(stream->username, font_heading, available_content_bounds, 
     GTextOverflowModeTrailingEllipsis, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
   s_username_layer = text_layer_create(GRect(bounds.origin.x, y, bounds.size.w, username_size.h));
   text_layer_set_font(s_username_layer, font_heading);
@@ -70,7 +69,7 @@ static void detail_window_load(Window *window) {
 
   snprintf(s_viewers_buf, sizeof(s_viewers_buf), "%d viewers", stream->viewer_count);
 
-  GSize viewers_size = graphics_text_layout_get_content_size(s_viewers_buf, font_body, bounds, 
+  GSize viewers_size = graphics_text_layout_get_content_size(s_viewers_buf, font_body, available_content_bounds, 
     GTextOverflowModeTrailingEllipsis, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
   s_viewers_layer = text_layer_create(GRect(bounds.origin.x, y, bounds.size.w, viewers_size.h));
   text_layer_set_font(s_viewers_layer, font_body);
@@ -79,7 +78,7 @@ static void detail_window_load(Window *window) {
   text_layer_set_text(s_viewers_layer, s_viewers_buf);
   y += viewers_size.h + item_spacing;
 
-  GSize category_size = graphics_text_layout_get_content_size(stream->category, font_title, bounds, 
+  GSize category_size = graphics_text_layout_get_content_size(stream->category, font_title, available_content_bounds, 
     GTextOverflowModeTrailingEllipsis, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
   s_category_layer = text_layer_create(GRect(bounds.origin.x, y, bounds.size.w, category_size.h));
   text_layer_set_font(s_category_layer, font_title);
@@ -88,7 +87,7 @@ static void detail_window_load(Window *window) {
   text_layer_set_text(s_category_layer, stream->category);
   y += category_size.h + item_spacing;
 
-  GSize title_size = graphics_text_layout_get_content_size(stream->title, font_body, bounds, 
+  GSize title_size = graphics_text_layout_get_content_size(stream->title, font_body, available_content_bounds, 
     GTextOverflowModeWordWrap, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
   s_title_layer = text_layer_create(GRect(bounds.origin.x, y, bounds.size.w, title_size.h));
   text_layer_set_font(s_title_layer, font_body);
@@ -97,12 +96,14 @@ static void detail_window_load(Window *window) {
   text_layer_set_text(s_title_layer, stream->title);
   y += title_size.h + item_spacing;
 
+  s_scroll_layer = scroll_layer_create(GRect(bounds.origin.x, bounds.origin.y + STATUS_BAR_LAYER_HEIGHT, bounds.size.w, bounds.size.h - STATUS_BAR_LAYER_HEIGHT));
+  scroll_layer_set_click_config_onto_window(s_scroll_layer, window);
+  scroll_layer_set_content_size(s_scroll_layer, GSize(bounds.size.w, y));
   scroll_layer_add_child(s_scroll_layer, text_layer_get_layer(s_username_layer));
   scroll_layer_add_child(s_scroll_layer, text_layer_get_layer(s_viewers_layer));
   scroll_layer_add_child(s_scroll_layer, text_layer_get_layer(s_category_layer));
   scroll_layer_add_child(s_scroll_layer, text_layer_get_layer(s_title_layer));
 
-  scroll_layer_set_content_size(s_scroll_layer, GSize(bounds.size.w, y));
   layer_add_child(root, scroll_layer_get_layer(s_scroll_layer));
 
   text_layer_enable_screen_text_flow_and_paging(s_username_layer, padding);
