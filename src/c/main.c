@@ -12,7 +12,7 @@ typedef struct
 {
     char username[MAX_USERNAME_LEN];
     char category[MAX_CATEGORY_LEN];
-    int viewer_count;
+    int32_t viewer_count;
     char title[MAX_TITLE_LEN];
 } StreamInfo;
 
@@ -39,6 +39,20 @@ static TextLayer *s_title_layer;
 
 // Persistent buffers for detail window text
 static char s_viewers_buf[24];
+
+static void format_viewer_count(char *dest, size_t dest_size, int32_t viewer_count) {
+    if (viewer_count >= 1000000) {
+        int32_t int_part = viewer_count / 1000000;
+        int32_t frac_digit = (viewer_count % 1000000) / 100000;
+        snprintf(dest, dest_size, "%ld.%ldM", int_part, frac_digit);
+    } else if (viewer_count >= 1000) {
+        int32_t int_part = viewer_count / 1000;
+        int32_t frac_digit = (viewer_count % 1000) / 100;
+        snprintf(dest, dest_size, "%ld.%ldK", int_part, frac_digit);
+    } else {
+        snprintf(dest, dest_size, "%ld", viewer_count);
+    }
+}
 
 // ---- Detail window ----
 
@@ -80,7 +94,7 @@ static void detail_window_load(Window *window)
     text_layer_set_text(s_username_layer, stream->username);
     y += username_size.h + DETAIL_ITEM_SPACING;
 
-    snprintf(s_viewers_buf, sizeof(s_viewers_buf), "%d viewers", stream->viewer_count);
+    snprintf(s_viewers_buf, sizeof(s_viewers_buf), "%ld viewers", stream->viewer_count);
 
     GSize viewers_size = graphics_text_layout_get_content_size(s_viewers_buf,
                                                                font_body,
@@ -201,7 +215,7 @@ static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuI
         StreamInfo *stream = &s_streams[cell_index->row];
         static char subtitle_buf[48];
         static char viewers_short[16];
-        snprintf(viewers_short, sizeof(viewers_short), "%d", stream->viewer_count);
+        snprintf(viewers_short, sizeof(viewers_short), "%ld", stream->viewer_count);
         snprintf(subtitle_buf, sizeof(subtitle_buf), "%s \xc2\xb7 %s", viewers_short, stream->category);
         menu_cell_basic_draw(ctx, cell_layer, stream->username, subtitle_buf, NULL);
     }
@@ -262,7 +276,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
             if (category_t)
                 strncpy(stream->category, category_t->value->cstring, MAX_CATEGORY_LEN - 1);
             if (viewers_t)
-                stream->viewer_count = (int)viewers_t->value->int32;
+                stream->viewer_count = viewers_t->value->int32;
             if (title_t)
                 strncpy(stream->title, title_t->value->cstring, MAX_TITLE_LEN - 1);
 
