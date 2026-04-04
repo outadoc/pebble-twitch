@@ -37,7 +37,7 @@ static TextLayer *s_viewers_layer;
 static TextLayer *s_category_layer;
 static TextLayer *s_title_layer;
 
-// Persistent buffers for detail window text
+// UI data
 static char s_viewers_buf[24];
 
 static void format_viewer_count(char *dest, size_t dest_size, int32_t viewer_count) {
@@ -94,7 +94,10 @@ static void detail_window_load(Window *window)
     text_layer_set_text(s_username_layer, stream->username);
     y += username_size.h + DETAIL_ITEM_SPACING;
 
-    snprintf(s_viewers_buf, sizeof(s_viewers_buf), "%ld viewers", stream->viewer_count);
+    char viewers_short[8];
+    format_viewer_count(viewers_short, sizeof(viewers_short), stream->viewer_count);
+    
+    snprintf(s_viewers_buf, sizeof(s_viewers_buf), "%s viewers", viewers_short);
 
     GSize viewers_size = graphics_text_layout_get_content_size(s_viewers_buf,
                                                                font_body,
