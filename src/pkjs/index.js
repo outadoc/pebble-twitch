@@ -85,27 +85,32 @@ function fetchLiveStreams() {
         return;
       }
 
-      var streams = streamsData.data || [];
-      var count = Math.min(streams.length, MAX_STREAMS);
-      console.log('fetchLiveStreams: got ' + streams.length + ' live streams, sending ' + count);
+      var allStreams = streamsData.data || [];
+      var streams = allStreams.slice(0, MAX_STREAMS);
 
-      Pebble.sendAppMessage({ 'STREAM_COUNT': count }, function () {
-        console.log('fetchLiveStreams: STREAM_COUNT sent, starting stream data');
-        sendStream(streams, 0, count);
-      }, function () {
-        console.log('fetchLiveStreams: failed to send STREAM_COUNT');
-      });
+      console.log('fetchLiveStreams: got ' + allStreams.length + ' live streams, sending ' + streams.length);
+
+      sendAllStreams(streams);
     });
   });
 }
 
-function sendStream(streams, index, total) {
-  if (index >= total) {
-    console.log('sendStream: done, sent ' + total + ' streams');
+function sendAllStreams(streams) {
+  Pebble.sendAppMessage({ 'STREAM_COUNT': streams.length }, function () {
+    console.log('fetchLiveStreams: STREAM_COUNT sent, starting stream data');
+    sendStream(streams, 0);
+  }, function () {
+    console.log('fetchLiveStreams: failed to send STREAM_COUNT');
+  });
+}
+
+function sendStream(streams, index) {
+  if (index >= streams.length) {
+    console.log('sendStream: done, sent ' + streams.length + ' streams');
     return;
   }
   var s = streams[index];
-  console.log('sendStream: sending stream ' + index + '/' + total + ' user=' + s.user_name);
+  console.log('sendStream: sending stream ' + index + '/' + streams.length + ' user=' + s.user_name);
   var dict = {
     'STREAM_INDEX': index,
     'STREAM_USERNAME': (s.user_name || '').substring(0, 31),
@@ -114,7 +119,7 @@ function sendStream(streams, index, total) {
     'STREAM_TITLE': (s.title || '').substring(0, 127)
   };
   Pebble.sendAppMessage(dict,
-    function () { sendStream(streams, index + 1, total); },
+    function () { sendStream(streams, index + 1, streams.length); },
     function () { console.log('sendStream: failed to send stream ' + index); }
   );
 }
