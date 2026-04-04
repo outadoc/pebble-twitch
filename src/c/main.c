@@ -148,10 +148,6 @@ static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t secti
   return 1; // One row for loading/empty state
 }
 
-static int16_t menu_get_cell_height_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
-  return 44;
-}
-
 static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
   if (s_streams_total == 0) {
     menu_cell_basic_draw(ctx, cell_layer, "No live streams", NULL, NULL);
@@ -241,7 +237,6 @@ static void main_window_load(Window *window) {
   menu_layer_set_highlight_colors(s_menu_layer, s_color_accent, s_color_on_accent);
   menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks) {
     .get_num_rows = menu_get_num_rows_callback,
-    .get_cell_height = menu_get_cell_height_callback,
     .draw_row = menu_draw_row_callback,
     .select_click = menu_select_callback
   });
