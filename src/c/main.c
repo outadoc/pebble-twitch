@@ -8,6 +8,9 @@
 #define DETAIL_TEXT_INSET 5
 #define DETAIL_ITEM_SPACING 4
 
+#define COLOR_ACCENT GColorPurple
+#define COLOR_ON_ACCENT GColorWhite
+
 typedef struct
 {
     char username[MAX_USERNAME_LEN];
@@ -20,9 +23,6 @@ static StreamInfo s_streams[MAX_STREAMS];
 static int s_streams_total = -1;
 static int s_streams_received = 0;
 static int s_selected_index = 0;
-
-static GColor8 s_color_accent = GColorPurple;
-static GColor8 s_color_on_accent = GColorWhite;
 
 // Main window
 static Window *s_main_window;
@@ -63,7 +63,7 @@ static void detail_window_load(Window *window)
     StreamInfo *stream = &s_streams[s_selected_index];
 
     s_status_bar = status_bar_layer_create();
-    status_bar_layer_set_colors(s_status_bar, s_color_accent, s_color_on_accent);
+    status_bar_layer_set_colors(s_status_bar, COLOR_ACCENT, COLOR_ON_ACCENT);
     layer_set_frame(status_bar_layer_get_layer(s_status_bar), GRect(bounds.origin.x, bounds.origin.y, bounds.size.w, STATUS_BAR_LAYER_HEIGHT));
     layer_add_child(root, status_bar_layer_get_layer(s_status_bar));
 
@@ -311,12 +311,12 @@ static void main_window_load(Window *window)
     GRect bounds = layer_get_bounds(root);
 
     s_status_bar = status_bar_layer_create();
-    status_bar_layer_set_colors(s_status_bar, s_color_accent, s_color_on_accent);
+    status_bar_layer_set_colors(s_status_bar, COLOR_ACCENT, COLOR_ON_ACCENT);
     layer_set_frame(status_bar_layer_get_layer(s_status_bar), GRect(bounds.origin.x, bounds.origin.y, bounds.size.w, STATUS_BAR_LAYER_HEIGHT));
     layer_add_child(root, status_bar_layer_get_layer(s_status_bar));
 
     s_menu_layer = menu_layer_create(GRect(bounds.origin.x, bounds.origin.y + STATUS_BAR_LAYER_HEIGHT, bounds.size.w, bounds.size.h));
-    menu_layer_set_highlight_colors(s_menu_layer, s_color_accent, s_color_on_accent);
+    menu_layer_set_highlight_colors(s_menu_layer, COLOR_ACCENT, COLOR_ON_ACCENT);
     menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks){.get_num_rows = menu_get_num_rows_callback, .draw_row = menu_draw_row_callback, .select_click = menu_select_callback});
     menu_layer_set_click_config_onto_window(s_menu_layer, window);
     layer_add_child(root, menu_layer_get_layer(s_menu_layer));
