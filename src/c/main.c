@@ -52,16 +52,16 @@ static void detail_window_load(Window *window) {
 
   s_status_bar = status_bar_layer_create();
   status_bar_layer_set_colors(s_status_bar, s_color_accent, s_color_on_accent);
-  layer_set_frame(status_bar_layer_get_layer(s_status_bar), GRect(0, 0, bounds.size.w, STATUS_BAR_LAYER_HEIGHT));
+  layer_set_frame(status_bar_layer_get_layer(s_status_bar), GRect(bounds.origin.x, bounds.origin.y, bounds.size.w, STATUS_BAR_LAYER_HEIGHT));
   layer_add_child(root, status_bar_layer_get_layer(s_status_bar));
 
-  s_scroll_layer = scroll_layer_create(GRect(0, STATUS_BAR_LAYER_HEIGHT, bounds.size.w, bounds.size.h));
+  s_scroll_layer = scroll_layer_create(GRect(bounds.origin.x, bounds.origin.y + STATUS_BAR_LAYER_HEIGHT, bounds.size.w, bounds.size.h));
   scroll_layer_set_click_config_onto_window(s_scroll_layer, window);
 
   const int16_t pad = 4;
-  const int16_t x = 5;
+  const int16_t x = bounds.origin.x + 5;
   const int16_t w = bounds.size.w - 10;
-  int16_t y = pad;
+  int16_t y = bounds.origin.y + pad;
   int16_t round_padding = 8;
 
   GFont font_heading = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
@@ -230,10 +230,10 @@ static void main_window_load(Window *window) {
 
   s_status_bar = status_bar_layer_create();
   status_bar_layer_set_colors(s_status_bar, s_color_accent, s_color_on_accent);
-  layer_set_frame(status_bar_layer_get_layer(s_status_bar), GRect(0, 0, bounds.size.w, STATUS_BAR_LAYER_HEIGHT));
+  layer_set_frame(status_bar_layer_get_layer(s_status_bar), GRect(bounds.origin.x, bounds.origin.y, bounds.size.w, STATUS_BAR_LAYER_HEIGHT));
   layer_add_child(root, status_bar_layer_get_layer(s_status_bar));
 
-  s_menu_layer = menu_layer_create(GRect(0, STATUS_BAR_LAYER_HEIGHT, bounds.size.w, bounds.size.h));
+  s_menu_layer = menu_layer_create(GRect(bounds.origin.x, bounds.origin.y + STATUS_BAR_LAYER_HEIGHT, bounds.size.w, bounds.size.h));
   menu_layer_set_highlight_colors(s_menu_layer, s_color_accent, s_color_on_accent);
   menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks) {
     .get_num_rows = menu_get_num_rows_callback,
