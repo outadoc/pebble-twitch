@@ -15,6 +15,10 @@
 #define COLOR_ACCENT GColorPurple
 #define COLOR_ON_ACCENT GColorWhite
 
+#define STATE_WAITING -1
+#define STATE_NOT_CONFIGURED -2
+#define STATE_NETWORK_ERROR -3
+
 typedef struct
 {
     char username[MAX_USERNAME_LEN];
@@ -223,9 +227,21 @@ static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t secti
 
 static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data)
 {
-    if (s_streams_total == -1)
+    if (s_streams_total == STATE_WAITING)
     {
         menu_cell_basic_draw(ctx, cell_layer, "Loading...", NULL, NULL);
+        return;
+    }
+
+    if (s_streams_total == STATE_NOT_CONFIGURED)
+    {
+        menu_cell_basic_draw(ctx, cell_layer, "Config. required", NULL, NULL);
+        return;
+    }
+
+    if (s_streams_total == STATE_NETWORK_ERROR)
+    {
+        menu_cell_basic_draw(ctx, cell_layer, "Network error", NULL, NULL);
         return;
     }
 

@@ -8,6 +8,9 @@ let TWITCH_API = 'https://api.twitch.tv/helix';
 let TWITCH_CLIENT_ID = '53p2uwy4r832kgbxqs66g4i3idtjso';
 let MOCK_API_DATA_FOR_TESTING = false;
 
+let ERROR_NOT_CONFIGURED = -2;
+let ERROR_NETWORK = -3;
+
 function xhrGet(url, headers, callback) {
   console.log('XHR GET ' + url);
 
@@ -54,8 +57,8 @@ function fetchLiveStreams() {
   console.log('fetchLiveStreams: clientId set=' + clientId + ' accessToken set=[redacted]');
 
   if (!clientId || !accessToken) {
-    console.log('fetchLiveStreams: no credentials configured, sending STREAM_COUNT=0');
-    Pebble.sendAppMessage({ 'STREAM_COUNT': 0 });
+    console.log('fetchLiveStreams: no credentials configured');
+    Pebble.sendAppMessage({ 'STREAM_COUNT': ERROR_NOT_CONFIGURED });
     return;
   }
 
@@ -69,13 +72,13 @@ function fetchLiveStreams() {
   xhrGet(TWITCH_API + '/users', headers, function (err, data) {
     if (err) {
       console.log('fetchLiveStreams: failed to get user: ' + err);
-      Pebble.sendAppMessage({ 'STREAM_COUNT': 0 });
+      Pebble.sendAppMessage({ 'STREAM_COUNT': ERROR_NETWORK });
       return;
     }
 
     if (!data.data || data.data.length === 0) {
       console.log('fetchLiveStreams: no user data in response');
-      Pebble.sendAppMessage({ 'STREAM_COUNT': 0 });
+      Pebble.sendAppMessage({ 'STREAM_COUNT': ERROR_NETWORK });
       return;
     }
 
@@ -88,7 +91,7 @@ function fetchLiveStreams() {
     xhrGet(TWITCH_API + '/streams/followed?user_id=' + userId + '&first=' + MAX_STREAMS, headers, function (err, streamsData) {
       if (err) {
         console.log('fetchLiveStreams: failed to get streams: ' + err);
-        Pebble.sendAppMessage({ 'STREAM_COUNT': 0 });
+        Pebble.sendAppMessage({ 'STREAM_COUNT': ERROR_NETWORK });
         return;
       }
 
