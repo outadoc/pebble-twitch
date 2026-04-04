@@ -7,7 +7,10 @@
 
 #define DETAIL_OUTER_PADDING 8
 #define DETAIL_ROUND_EXTRA_PADDING 8
-#define DETAIL_ITEM_SPACING 4
+
+// For some reason, graphics_text_layout_get_content_size doesn't reserve
+// enough space for characters that draw below the baseline, so here we are.
+#define DETAIL_TEXT_ADDITIONAL_HEIGHT 4
 
 #define COLOR_ACCENT GColorPurple
 #define COLOR_ON_ACCENT GColorWhite
@@ -88,54 +91,63 @@ static void detail_window_load(Window *window)
     GFont font_title = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
     GFont font_body = fonts_get_system_font(FONT_KEY_GOTHIC_18);
 
-    GSize username_size = graphics_text_layout_get_content_size(stream->username,
-                                                                font_heading,
-                                                                available_content_bounds,
-                                                                GTextOverflowModeTrailingEllipsis,
-                                                                PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
-    s_username_layer = text_layer_create(GRect(padded_bounds.origin.x, y, padded_bounds.size.w, username_size.h));
+    uint16_t username_height = graphics_text_layout_get_content_size(stream->username,
+                                                                     font_heading,
+                                                                     available_content_bounds,
+                                                                     GTextOverflowModeTrailingEllipsis,
+                                                                     PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft))
+                                   .h +
+                               DETAIL_TEXT_ADDITIONAL_HEIGHT;
+
+    s_username_layer = text_layer_create(GRect(padded_bounds.origin.x, y, padded_bounds.size.w, username_height));
     text_layer_set_font(s_username_layer, font_heading);
     text_layer_set_overflow_mode(s_username_layer, GTextOverflowModeTrailingEllipsis);
     text_layer_set_text(s_username_layer, stream->username);
-    y += username_size.h + DETAIL_ITEM_SPACING;
+    y += username_height;
 
     char viewers_short[8];
     format_viewer_count(viewers_short, sizeof(viewers_short), stream->viewer_count);
 
     snprintf(s_viewers_buf, sizeof(s_viewers_buf), "%s viewers", viewers_short);
 
-    GSize viewers_size = graphics_text_layout_get_content_size(s_viewers_buf,
-                                                               font_body,
-                                                               available_content_bounds,
-                                                               GTextOverflowModeTrailingEllipsis,
-                                                               PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
-    s_viewers_layer = text_layer_create(GRect(padded_bounds.origin.x, y, padded_bounds.size.w, viewers_size.h));
+    uint16_t viewers_height = graphics_text_layout_get_content_size(s_viewers_buf,
+                                                                  font_body,
+                                                                  available_content_bounds,
+                                                                  GTextOverflowModeTrailingEllipsis,
+                                                                  PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft))
+                                .h +
+                            DETAIL_TEXT_ADDITIONAL_HEIGHT;
+    s_viewers_layer = text_layer_create(GRect(padded_bounds.origin.x, y, padded_bounds.size.w, viewers_height));
     text_layer_set_font(s_viewers_layer, font_body);
     text_layer_set_overflow_mode(s_viewers_layer, GTextOverflowModeTrailingEllipsis);
     text_layer_set_text(s_viewers_layer, s_viewers_buf);
-    y += viewers_size.h + DETAIL_ITEM_SPACING;
+    y += viewers_height;
 
-    GSize category_size = graphics_text_layout_get_content_size(stream->category,
+    uint16_t category_height = graphics_text_layout_get_content_size(stream->category,
                                                                 font_title,
                                                                 available_content_bounds,
                                                                 GTextOverflowModeTrailingEllipsis,
-                                                                PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
-    s_category_layer = text_layer_create(GRect(padded_bounds.origin.x, y, padded_bounds.size.w, category_size.h));
+                                                                PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft))
+                                 .h +
+                             DETAIL_TEXT_ADDITIONAL_HEIGHT;
+    s_category_layer = text_layer_create(GRect(padded_bounds.origin.x, y, padded_bounds.size.w, category_height));
     text_layer_set_font(s_category_layer, font_title);
     text_layer_set_overflow_mode(s_category_layer, GTextOverflowModeTrailingEllipsis);
     text_layer_set_text(s_category_layer, stream->category);
-    y += category_size.h + DETAIL_ITEM_SPACING;
+    y += category_height;
 
-    GSize title_size = graphics_text_layout_get_content_size(stream->title,
+    uint16_t title_height = graphics_text_layout_get_content_size(stream->title,
                                                              font_body,
                                                              available_content_bounds,
                                                              GTextOverflowModeWordWrap,
-                                                             PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
-    s_title_layer = text_layer_create(GRect(padded_bounds.origin.x, y, padded_bounds.size.w, title_size.h));
+                                                             PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft))
+                                 .h +
+                             DETAIL_TEXT_ADDITIONAL_HEIGHT;
+    s_title_layer = text_layer_create(GRect(padded_bounds.origin.x, y, padded_bounds.size.w, title_height));
     text_layer_set_font(s_title_layer, font_body);
     text_layer_set_overflow_mode(s_title_layer, GTextOverflowModeWordWrap);
     text_layer_set_text(s_title_layer, stream->title);
-    y += title_size.h + DETAIL_ITEM_SPACING + DETAIL_OUTER_PADDING;
+    y += title_height + DETAIL_OUTER_PADDING;
 
     s_scroll_layer = scroll_layer_create(GRect(bounds.origin.x,
                                                bounds.origin.y + STATUS_BAR_LAYER_HEIGHT,
