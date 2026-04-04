@@ -105,6 +105,24 @@ function fetchLiveStreams() {
 function sendMockStreams() {
   var mockStreams = [
     {
+      "id": "1",
+      "user_id": "1",
+      "user_login": "loremipsum",
+      "user_name": "LoremIpsum",
+      "game_id": "1",
+      "game_name": "NEW SUPER LOREM IPSUM BROS.",
+      "type": "live",
+      "title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin hendrerit ipsum et commodo semper. Maecenas semper lorem quis ante porta blandit. Integer porttitor, nunc ut viverra elementum, nulla nunc faucibus elit, sed tempor nisi massa nec dolor. Praesent in risus nec neque rutrum mollis. In hac habitasse platea dictumst. Phasellus porttitor ante vitae tellus convallis, at suscipit lacus vestibulum. Proin ut ligula sapien. Donec consectetur placerat nibh cursus consectetur. Donec ac est vehicula, ullamcorper dolor et, suscipit urna. Praesent ut sapien sed purus bibendum porttitor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus id pulvinar lacus. Pellentesque venenatis magna ut magna aliquam, quis suscipit nunc consectetur.",
+      "viewer_count": 9999999,
+      "started_at": "2026-04-04T12:45:03Z",
+      "language": "fr",
+      "tag_ids": [],
+      "tags": [
+        "Français"
+      ],
+      "is_mature": false
+    },
+    {
       "id": "316417207651",
       "user_id": "41719107",
       "user_login": "zerator",
@@ -292,7 +310,7 @@ function sendStream(streams, index) {
     'STREAM_USERNAME': (s.user_name || '').substring(0, 31),
     'STREAM_CATEGORY': (s.game_name || '').substring(0, 31),
     'STREAM_VIEWER_COUNT': s.viewer_count || 0,
-    'STREAM_TITLE': (s.title || '').substring(0, 127)
+    'STREAM_TITLE': (s.title || '').substring(0, 255)
   };
 
   Pebble.sendAppMessage(dict,

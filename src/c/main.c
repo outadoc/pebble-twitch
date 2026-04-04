@@ -3,7 +3,7 @@
 #define MAX_STREAMS 20
 #define MAX_USERNAME_LEN 32
 #define MAX_CATEGORY_LEN 32
-#define MAX_TITLE_LEN 128
+#define MAX_TITLE_LEN 256
 
 typedef struct {
   char username[MAX_USERNAME_LEN];
@@ -268,8 +268,7 @@ static void init() {
   app_message_register_outbox_failed(outbox_failed_callback);
   app_message_register_outbox_sent(outbox_sent_callback);
 
-  // TODO see if this needs to be adjusted
-  app_message_open(512, 256);
+  app_message_open(512, 32);
 }
 
 static void deinit() {
