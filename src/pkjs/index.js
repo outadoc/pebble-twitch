@@ -308,18 +308,23 @@ function sendStream(streams, index) {
   );
 }
 
+function refreshStreams() {
+  if (MOCK_API_DATA_FOR_TESTING) {
+    sendMockStreams();
+  } else {
+    fetchLiveStreams();
+  }
+}
+
 Pebble.addEventListener('ready', function () {
   console.log('PebbleKit JS ready!');
+  refreshStreams();
 });
 
 Pebble.addEventListener('appmessage', function (e) {
   console.log('AppMessage received: ' + JSON.stringify(e.payload));
 
   if (e.payload['REQUEST_STREAMS']) {
-    if (MOCK_API_DATA_FOR_TESTING) {
-      sendMockStreams()
-    } else {
-      fetchLiveStreams();
-    }
+    refreshStreams();
   }
 });

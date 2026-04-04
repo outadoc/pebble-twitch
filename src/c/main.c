@@ -268,11 +268,6 @@ static void init() {
 
   // TODO see if this needs to be adjusted
   app_message_open(512, 256);
-
-  DictionaryIterator *iter;
-  app_message_outbox_begin(&iter);
-  dict_write_uint8(iter, MESSAGE_KEY_REQUEST_STREAMS, 1);
-  app_message_outbox_send();
 }
 
 static void deinit() {
