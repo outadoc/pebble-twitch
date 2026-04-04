@@ -36,13 +36,6 @@ static TextLayer *s_title_layer;
 // Persistent buffers for detail window text
 static char s_viewers_buf[24];
 
-static int16_t measure_text(const char *text, GFont font, int16_t width) {
-  GSize size = graphics_text_layout_get_content_size(
-    text, font, GRect(0, 0, width, 2000),
-    GTextOverflowModeWordWrap, GTextAlignmentLeft);
-  return size.h;
-}
-
 // ---- Detail window ----
 
 static void detail_window_load(Window *window) {
@@ -58,43 +51,51 @@ static void detail_window_load(Window *window) {
   s_scroll_layer = scroll_layer_create(GRect(bounds.origin.x, bounds.origin.y + STATUS_BAR_LAYER_HEIGHT, bounds.size.w, bounds.size.h));
   scroll_layer_set_click_config_onto_window(s_scroll_layer, window);
 
-  const int16_t pad = 4;
-  const int16_t x = bounds.origin.x + 5;
-  const int16_t w = bounds.size.w - 10;
-  int16_t y = bounds.origin.y + pad;
-  int16_t round_padding = 8;
+  const int16_t padding = 8;
+  const int16_t item_spacing = 4;
+  int16_t y = bounds.origin.y;
 
   GFont font_heading = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
   GFont font_title = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
   GFont font_body = fonts_get_system_font(FONT_KEY_GOTHIC_18);
 
-  int16_t username_h = measure_text(stream->username, font_heading, w);
-  s_username_layer = text_layer_create(GRect(x, y, w, username_h));
+  GSize username_size = graphics_text_layout_get_content_size(stream->username, font_heading, bounds, 
+    GTextOverflowModeTrailingEllipsis, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
+  s_username_layer = text_layer_create(GRect(bounds.origin.x, y, username_size.w, username_size.h));
   text_layer_set_font(s_username_layer, font_heading);
   text_layer_set_overflow_mode(s_username_layer, GTextOverflowModeTrailingEllipsis);
+  text_layer_set_text_alignment(s_username_layer, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
   text_layer_set_text(s_username_layer, stream->username);
-  y += username_h + pad;
+  y += username_size.h + item_spacing;
 
   snprintf(s_viewers_buf, sizeof(s_viewers_buf), "%d viewers", stream->viewer_count);
-  int16_t viewers_h = measure_text(s_viewers_buf, font_body, w);
-  s_viewers_layer = text_layer_create(GRect(x, y, w, viewers_h));
-  text_layer_set_font(s_viewers_layer, font_body);
-  text_layer_set_text(s_viewers_layer, s_viewers_buf);
-  y += viewers_h + pad;
 
-  int16_t category_h = measure_text(stream->category, font_title, w);
-  s_category_layer = text_layer_create(GRect(x, y, w, category_h));
+  GSize viewers_size = graphics_text_layout_get_content_size(s_viewers_buf, font_body, bounds, 
+    GTextOverflowModeTrailingEllipsis, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
+  s_viewers_layer = text_layer_create(GRect(bounds.origin.x, y, viewers_size.w, viewers_size.h));
+  text_layer_set_font(s_viewers_layer, font_body);
+  text_layer_set_overflow_mode(s_viewers_layer, GTextOverflowModeTrailingEllipsis);
+  text_layer_set_text_alignment(s_viewers_layer, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
+  text_layer_set_text(s_viewers_layer, s_viewers_buf);
+  y += viewers_size.h + item_spacing;
+
+  GSize category_size = graphics_text_layout_get_content_size(stream->category, font_title, bounds, 
+    GTextOverflowModeTrailingEllipsis, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
+  s_category_layer = text_layer_create(GRect(bounds.origin.x, y, category_size.w, category_size.h));
   text_layer_set_font(s_category_layer, font_title);
   text_layer_set_overflow_mode(s_category_layer, GTextOverflowModeTrailingEllipsis);
+  text_layer_set_text_alignment(s_category_layer, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
   text_layer_set_text(s_category_layer, stream->category);
-  y += category_h + pad;
+  y += category_size.h + item_spacing;
 
-  int16_t title_h = measure_text(stream->title, font_body, w);
-  s_title_layer = text_layer_create(GRect(x, y, w, title_h));
+  GSize title_size = graphics_text_layout_get_content_size(stream->title, font_body, bounds, 
+    GTextOverflowModeWordWrap, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
+  s_title_layer = text_layer_create(GRect(bounds.origin.x, y, title_size.w, title_size.h));
   text_layer_set_font(s_title_layer, font_body);
   text_layer_set_overflow_mode(s_title_layer, GTextOverflowModeWordWrap);
+  text_layer_set_text_alignment(s_title_layer, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
   text_layer_set_text(s_title_layer, stream->title);
-  y += title_h + pad;
+  y += title_size.h + item_spacing;
 
   scroll_layer_add_child(s_scroll_layer, text_layer_get_layer(s_username_layer));
   scroll_layer_add_child(s_scroll_layer, text_layer_get_layer(s_viewers_layer));
@@ -104,10 +105,10 @@ static void detail_window_load(Window *window) {
   scroll_layer_set_content_size(s_scroll_layer, GSize(bounds.size.w, y));
   layer_add_child(root, scroll_layer_get_layer(s_scroll_layer));
 
-  text_layer_enable_screen_text_flow_and_paging(s_username_layer, round_padding);
-  text_layer_enable_screen_text_flow_and_paging(s_viewers_layer, round_padding);
-  text_layer_enable_screen_text_flow_and_paging(s_category_layer, round_padding);
-  text_layer_enable_screen_text_flow_and_paging(s_title_layer, round_padding);
+  text_layer_enable_screen_text_flow_and_paging(s_username_layer, padding);
+  text_layer_enable_screen_text_flow_and_paging(s_viewers_layer, padding);
+  text_layer_enable_screen_text_flow_and_paging(s_category_layer, padding);
+  text_layer_enable_screen_text_flow_and_paging(s_title_layer, padding);
 }
 
 static void detail_window_unload(Window *window) {
