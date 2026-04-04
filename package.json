@@ -30,7 +30,8 @@
                     "type": "bitmap",
                     "name": "MENU_ICON",
                     "file": "images/icon.png",
-                    "menuIcon": true
+                    "menuIcon": true,
+                    "memoryFormat": "1Bit"
                 }
             ]
         },
