@@ -56,6 +56,8 @@ static void detail_window_load(Window *window)
     text_layer_set_font(s_username_layer, font_heading);
     text_layer_set_overflow_mode(s_username_layer, GTextOverflowModeTrailingEllipsis);
     text_layer_set_text(s_username_layer, stream->username);
+    text_layer_set_text_color(s_username_layer, COLOR_ON_ACCENT);
+    text_layer_set_background_color(s_username_layer, GColorClear);
     y += username_height;
 
     char viewers_short[8];
@@ -74,6 +76,8 @@ static void detail_window_load(Window *window)
     text_layer_set_font(s_viewers_layer, font_body);
     text_layer_set_overflow_mode(s_viewers_layer, GTextOverflowModeTrailingEllipsis);
     text_layer_set_text(s_viewers_layer, s_viewers_buf);
+    text_layer_set_text_color(s_viewers_layer, COLOR_ON_ACCENT);
+    text_layer_set_background_color(s_viewers_layer, GColorClear);
     y += viewers_height;
 
     uint16_t category_height = graphics_text_layout_get_content_size(stream->category,
@@ -87,6 +91,8 @@ static void detail_window_load(Window *window)
     text_layer_set_font(s_category_layer, font_title);
     text_layer_set_overflow_mode(s_category_layer, GTextOverflowModeTrailingEllipsis);
     text_layer_set_text(s_category_layer, stream->category);
+    text_layer_set_text_color(s_category_layer, COLOR_ON_ACCENT);
+    text_layer_set_background_color(s_category_layer, GColorClear);
     y += category_height;
 
     uint16_t title_height = graphics_text_layout_get_content_size(stream->title,
@@ -100,6 +106,8 @@ static void detail_window_load(Window *window)
     text_layer_set_font(s_title_layer, font_body);
     text_layer_set_overflow_mode(s_title_layer, GTextOverflowModeWordWrap);
     text_layer_set_text(s_title_layer, stream->title);
+    text_layer_set_text_color(s_title_layer, COLOR_ON_ACCENT);
+    text_layer_set_background_color(s_title_layer, GColorClear);
     y += title_height + DETAIL_OUTER_PADDING;
 
     s_scroll_layer = scroll_layer_create(GRect(bounds.origin.x,
@@ -154,6 +162,7 @@ void show_detail_window(int index)
 {
     s_selected_index = index;
     s_detail_window = window_create();
+    window_set_background_color(s_detail_window, COLOR_ACCENT);
     window_set_window_handlers(s_detail_window,
                                (WindowHandlers){
                                    .load = detail_window_load,
