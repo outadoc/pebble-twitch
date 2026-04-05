@@ -1,6 +1,7 @@
 #include <pebble.h>
 
 #include "modules/stream_data.h"
+#include "windows/error_window.h"
 #include "windows/main_window.h"
 
 // ---- AppMessage ----
@@ -12,7 +13,13 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     {
         stream_data_set_total((int)count_t->value->int32);
         stream_data_set_received(0);
+        error_window_pop();
         main_window_reload_data();
+
+        if (stream_data_get_total() == STATE_NOT_CONFIGURED)
+        {
+            error_window_push("Setup required", "Open the Pebble app on your phone to configure Twebble.");
+        }
     }
 
     Tuple *index_t = dict_find(iterator, MESSAGE_KEY_STREAM_INDEX);
