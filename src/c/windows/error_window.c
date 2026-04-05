@@ -13,12 +13,23 @@ static TextLayer *s_message_layer;
 static char s_title_buf[64];
 static char s_message_buf[256];
 
+static void back_click_handler(ClickRecognizerRef recognizer, void *context)
+{
+    window_stack_pop_all(true);
+}
+
+static void click_config_provider(void *context)
+{
+    window_single_click_subscribe(BUTTON_ID_BACK, back_click_handler);
+}
+
 static void error_window_load(Window *window)
 {
     Layer *root = window_get_root_layer(window);
     GRect bounds = layer_get_bounds(root);
 
     window_set_background_color(window, GColorIslamicGreen);
+    window_set_click_config_provider(window, click_config_provider);
 
     int16_t content_x = bounds.origin.x + ERROR_WINDOW_PADDING;
     int16_t content_w = bounds.size.w - (ERROR_WINDOW_PADDING * 2);
