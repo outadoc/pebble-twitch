@@ -335,6 +335,11 @@ Pebble.addEventListener('ready', function () {
   refreshStreams();
 });
 
+Pebble.addEventListener('webviewclosed', function () {
+  console.log('webviewclosed: config changed, refreshing streams');
+  refreshStreams();
+});
+
 Pebble.addEventListener('appmessage', function (e) {
   console.log('AppMessage received: ' + JSON.stringify(e.payload));
 
