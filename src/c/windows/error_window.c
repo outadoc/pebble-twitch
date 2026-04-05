@@ -1,11 +1,10 @@
 #include "error_window.h"
+#include "../constants.h"
 
 #include <pebble.h>
 
 #define ERROR_WINDOW_PADDING 8
 #define ERROR_WINDOW_GAP 8
-// graphics_text_layout_get_content_size underestimates height for descenders
-#define ERROR_TEXT_ADDITIONAL_HEIGHT 4
 
 static Window *s_error_window;
 static TextLayer *s_title_layer;
@@ -32,13 +31,13 @@ static void error_window_load(Window *window)
                           s_title_buf, font_title, measure_bounds,
                           GTextOverflowModeWordWrap, GTextAlignmentCenter)
                           .h +
-                      ERROR_TEXT_ADDITIONAL_HEIGHT;
+                      DETAIL_TEXT_ADDITIONAL_HEIGHT;
 
     int16_t message_h = graphics_text_layout_get_content_size(
                             s_message_buf, font_message, measure_bounds,
                             GTextOverflowModeWordWrap, GTextAlignmentCenter)
                             .h +
-                        ERROR_TEXT_ADDITIONAL_HEIGHT;
+                        DETAIL_TEXT_ADDITIONAL_HEIGHT;
 
     int16_t total_h = title_h + ERROR_WINDOW_GAP + message_h;
     int16_t start_y = bounds.origin.y + (bounds.size.h - total_h) / 2;

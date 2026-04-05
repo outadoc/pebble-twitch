@@ -8,10 +8,6 @@
 #define DETAIL_OUTER_PADDING 8
 #define DETAIL_ROUND_EXTRA_PADDING 8
 
-// For some reason, graphics_text_layout_get_content_size doesn't reserve
-// enough space for characters that draw below the baseline, so here we are.
-#define DETAIL_TEXT_ADDITIONAL_HEIGHT 4
-
 static Window *s_detail_window;
 static ScrollLayer *s_scroll_layer;
 static TextLayer *s_username_layer;

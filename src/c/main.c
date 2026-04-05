@@ -20,6 +20,10 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
         {
             error_window_push("Setup required", "Open the Pebble app on your phone to configure Twebble.");
         }
+        else if (stream_data_get_total() == STATE_NETWORK_ERROR)
+        {
+            error_window_push("Error", "Oops. Maybe check your network?");
+        }
     }
 
     Tuple *index_t = dict_find(iterator, MESSAGE_KEY_STREAM_INDEX);
