@@ -1,0 +1,166 @@
+#include "detail_window.h"
+
+#include <pebble.h>
+
+#include "../constants.h"
+#include "../modules/stream_data.h"
+
+#define DETAIL_OUTER_PADDING 8
+#define DETAIL_ROUND_EXTRA_PADDING 8
+
+// For some reason, graphics_text_layout_get_content_size doesn't reserve
+// enough space for characters that draw below the baseline, so here we are.
+#define DETAIL_TEXT_ADDITIONAL_HEIGHT 4
+
+static Window *s_detail_window;
+static ScrollLayer *s_scroll_layer;
+static TextLayer *s_username_layer;
+static TextLayer *s_viewers_layer;
+static TextLayer *s_category_layer;
+static TextLayer *s_title_layer;
+static StatusBarLayer *s_status_bar;
+
+static int s_selected_index = 0;
+static char s_viewers_buf[24];
+
+static void detail_window_load(Window *window)
+{
+    Layer *root = window_get_root_layer(window);
+    GRect bounds = layer_get_bounds(root);
+    StreamInfo *stream = stream_data_get(s_selected_index);
+
+    s_status_bar = status_bar_layer_create();
+    status_bar_layer_set_colors(s_status_bar, COLOR_ACCENT, COLOR_ON_ACCENT);
+    layer_set_frame(status_bar_layer_get_layer(s_status_bar), GRect(bounds.origin.x, bounds.origin.y, bounds.size.w, STATUS_BAR_LAYER_HEIGHT));
+    layer_add_child(root, status_bar_layer_get_layer(s_status_bar));
+
+    GRect padded_bounds = GRect(
+        bounds.origin.x + DETAIL_OUTER_PADDING,
+        bounds.origin.y,
+        bounds.size.w - (DETAIL_OUTER_PADDING * 2),
+        bounds.size.h);
+
+    GRect available_content_bounds = GRect(0, 0, padded_bounds.size.w, 2000);
+
+    int16_t y = padded_bounds.origin.y;
+
+    GFont font_heading = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
+    GFont font_title = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
+    GFont font_body = fonts_get_system_font(FONT_KEY_GOTHIC_18);
+
+    uint16_t username_height = graphics_text_layout_get_content_size(stream->username,
+                                                                     font_heading,
+                                                                     available_content_bounds,
+                                                                     GTextOverflowModeTrailingEllipsis,
+                                                                     PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft))
+                                   .h +
+                               DETAIL_TEXT_ADDITIONAL_HEIGHT;
+
+    s_username_layer = text_layer_create(GRect(padded_bounds.origin.x, y, padded_bounds.size.w, username_height));
+    text_layer_set_font(s_username_layer, font_heading);
+    text_layer_set_overflow_mode(s_username_layer, GTextOverflowModeTrailingEllipsis);
+    text_layer_set_text(s_username_layer, stream->username);
+    y += username_height;
+
+    char viewers_short[8];
+    format_viewer_count(viewers_short, sizeof(viewers_short), stream->viewer_count);
+
+    snprintf(s_viewers_buf, sizeof(s_viewers_buf), "%s viewers", viewers_short);
+
+    uint16_t viewers_height = graphics_text_layout_get_content_size(s_viewers_buf,
+                                                                    font_body,
+                                                                    available_content_bounds,
+                                                                    GTextOverflowModeTrailingEllipsis,
+                                                                    PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft))
+                                  .h +
+                              DETAIL_TEXT_ADDITIONAL_HEIGHT;
+    s_viewers_layer = text_layer_create(GRect(padded_bounds.origin.x, y, padded_bounds.size.w, viewers_height));
+    text_layer_set_font(s_viewers_layer, font_body);
+    text_layer_set_overflow_mode(s_viewers_layer, GTextOverflowModeTrailingEllipsis);
+    text_layer_set_text(s_viewers_layer, s_viewers_buf);
+    y += viewers_height;
+
+    uint16_t category_height = graphics_text_layout_get_content_size(stream->category,
+                                                                     font_title,
+                                                                     available_content_bounds,
+                                                                     GTextOverflowModeTrailingEllipsis,
+                                                                     PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft))
+                                   .h +
+                               DETAIL_TEXT_ADDITIONAL_HEIGHT;
+    s_category_layer = text_layer_create(GRect(padded_bounds.origin.x, y, padded_bounds.size.w, category_height));
+    text_layer_set_font(s_category_layer, font_title);
+    text_layer_set_overflow_mode(s_category_layer, GTextOverflowModeTrailingEllipsis);
+    text_layer_set_text(s_category_layer, stream->category);
+    y += category_height;
+
+    uint16_t title_height = graphics_text_layout_get_content_size(stream->title,
+                                                                  font_body,
+                                                                  available_content_bounds,
+                                                                  GTextOverflowModeWordWrap,
+                                                                  PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft))
+                                .h +
+                            DETAIL_TEXT_ADDITIONAL_HEIGHT;
+    s_title_layer = text_layer_create(GRect(padded_bounds.origin.x, y, padded_bounds.size.w, title_height));
+    text_layer_set_font(s_title_layer, font_body);
+    text_layer_set_overflow_mode(s_title_layer, GTextOverflowModeWordWrap);
+    text_layer_set_text(s_title_layer, stream->title);
+    y += title_height + DETAIL_OUTER_PADDING;
+
+    s_scroll_layer = scroll_layer_create(GRect(bounds.origin.x,
+                                               bounds.origin.y + STATUS_BAR_LAYER_HEIGHT,
+                                               bounds.size.w,
+                                               bounds.size.h - STATUS_BAR_LAYER_HEIGHT));
+    scroll_layer_set_click_config_onto_window(s_scroll_layer, window);
+    scroll_layer_set_content_size(s_scroll_layer, GSize(bounds.size.w, y));
+    scroll_layer_add_child(s_scroll_layer, text_layer_get_layer(s_username_layer));
+    scroll_layer_add_child(s_scroll_layer, text_layer_get_layer(s_viewers_layer));
+    scroll_layer_add_child(s_scroll_layer, text_layer_get_layer(s_category_layer));
+    scroll_layer_add_child(s_scroll_layer, text_layer_get_layer(s_title_layer));
+
+    layer_add_child(root, scroll_layer_get_layer(s_scroll_layer));
+
+#if PBL_ROUND
+
+    text_layer_set_text_alignment(s_username_layer, GTextAlignmentCenter);
+    text_layer_set_text_alignment(s_viewers_layer, GTextAlignmentCenter);
+    text_layer_set_text_alignment(s_category_layer, GTextAlignmentCenter);
+    text_layer_set_text_alignment(s_title_layer, GTextAlignmentCenter);
+
+    text_layer_enable_screen_text_flow_and_paging(s_username_layer, DETAIL_ROUND_EXTRA_PADDING);
+    text_layer_enable_screen_text_flow_and_paging(s_viewers_layer, DETAIL_ROUND_EXTRA_PADDING);
+    text_layer_enable_screen_text_flow_and_paging(s_category_layer, DETAIL_ROUND_EXTRA_PADDING);
+    text_layer_enable_screen_text_flow_and_paging(s_title_layer, DETAIL_ROUND_EXTRA_PADDING);
+
+#endif
+}
+
+static void detail_window_unload(Window *window)
+{
+    text_layer_destroy(s_username_layer);
+    text_layer_destroy(s_viewers_layer);
+    text_layer_destroy(s_category_layer);
+    text_layer_destroy(s_title_layer);
+    scroll_layer_destroy(s_scroll_layer);
+    status_bar_layer_destroy(s_status_bar);
+
+    s_username_layer = NULL;
+    s_viewers_layer = NULL;
+    s_category_layer = NULL;
+    s_title_layer = NULL;
+    s_scroll_layer = NULL;
+    s_status_bar = NULL;
+
+    window_destroy(s_detail_window);
+    s_detail_window = NULL;
+}
+
+void show_detail_window(int index)
+{
+    s_selected_index = index;
+    s_detail_window = window_create();
+    window_set_window_handlers(s_detail_window,
+                               (WindowHandlers){
+                                   .load = detail_window_load,
+                                   .unload = detail_window_unload});
+    window_stack_push(s_detail_window, true);
+}
