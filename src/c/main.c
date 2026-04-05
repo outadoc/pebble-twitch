@@ -343,7 +343,7 @@ static void main_window_load(Window *window)
     GRect bounds = layer_get_bounds(root);
 
     s_status_bar = status_bar_layer_create();
-    status_bar_layer_set_colors(s_status_bar, COLOR_ACCENT, COLOR_ON_ACCENT);
+    status_bar_layer_set_colors(s_status_bar, GColorWhite, GColorBlack);
     layer_set_frame(status_bar_layer_get_layer(s_status_bar), GRect(bounds.origin.x, bounds.origin.y, bounds.size.w, STATUS_BAR_LAYER_HEIGHT));
     layer_add_child(root, status_bar_layer_get_layer(s_status_bar));
 
