@@ -12,34 +12,25 @@ static StatusBarLayer *s_status_bar;
 
 static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data)
 {
-    if (stream_data_get_received() > 0)
+    int received = stream_data_get_received();
+
+    if (received > 0)
     {
-        return stream_data_get_received();
+        return received;
     }
 
-    // One row for loading/empty state
+    // One row for loading state
     return 1;
 }
 
 static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data)
 {
     int total = stream_data_get_total();
+    int received = stream_data_get_received();
 
     if (total == STATE_WAITING)
     {
         menu_cell_basic_draw(ctx, cell_layer, "Loading...", NULL, NULL);
-        return;
-    }
-
-    if (total == STATE_NOT_CONFIGURED)
-    {
-        menu_cell_basic_draw(ctx, cell_layer, "Config. required", NULL, NULL);
-        return;
-    }
-
-    if (total == STATE_NETWORK_ERROR)
-    {
-        menu_cell_basic_draw(ctx, cell_layer, "Network error", NULL, NULL);
         return;
     }
 
@@ -49,7 +40,7 @@ static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuI
         return;
     }
 
-    if (stream_data_get_received() > cell_index->row)
+    if (received > cell_index->row)
     {
         StreamInfo *stream = stream_data_get(cell_index->row);
         static char subtitle_buf[48];
@@ -62,12 +53,14 @@ static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuI
 
 static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data)
 {
-    if (stream_data_get_received() == 0)
+    int received = stream_data_get_received();
+
+    if (received == 0)
     {
         return;
     }
 
-    if ((int)cell_index->row >= stream_data_get_received())
+    if ((int)cell_index->row >= received)
     {
         return;
     }
