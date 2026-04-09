@@ -124,6 +124,7 @@ static void detail_window_load(Window *window)
     layer_add_child(root, scroll_layer_get_layer(s_scroll_layer));
 
 #if PBL_ROUND
+    scroll_layer_set_paging(s_scroll_layer, true);
 
     text_layer_set_text_alignment(s_username_layer, GTextAlignmentCenter);
     text_layer_set_text_alignment(s_viewers_layer, GTextAlignmentCenter);
